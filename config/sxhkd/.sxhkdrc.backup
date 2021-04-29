@@ -1,0 +1,110 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# BSPWM HOTKEYS
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# quit bspwm
+ctrl + alt + q
+    bspc quit
+
+# restart bspwm and sxhkd daemons
+ctrl + alt + r
+    bspc wm -r && pkill -USR1 -x sxhkd; \
+    notify-send "sxhkd" "restarted bspwm and sxhkd"
+
+# {close,kill} focused node
+super + {_,shift + }w
+    bspc node -{c,k}
+
+# sxhkd keymap
+super + slash
+    sxhk_help
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# STATE/FLAGS
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# set the node flags
+super + a ; {m,l,s,p}
+    bspc node -g {marked,locked,sticky,private}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# FOCUS/SWAP
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# focus/swap node directionally in tree
+super + {_,shift + }{h,j,k,l}
+    {bspc node -f,bspwm_smart_move} {west,south,north,east}
+
+# focus {node,desktop} {next,prev} in the current monitor
+{super,alt} + {_,shift +} Tab
+	bspc {desktop,node} -f {next,prev}.local
+
+# focus/swap {desktop} {next} monitor
+super + {_,shift + }o
+	bspc {monitor -f,desktop -s} next.active
+
+# focus/swap node in selected desktop
+super + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} focused:'^{1-9,10}'
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PRESELECT
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# move current window to a pre-selected space
+super + {_,shift + }y
+    bspc node {newest.marked -n newest,-n last}.!automatic
+
+# set preselect direction
+super + alt + {h,j,k,l}
+    bspc node --presel-dir '~{west,south,north,east}'
+
+# set preselect ratio
+super + alt + {1-9}
+	bspc node -o 0.{1-9}
+
+# cancel preslection on focused desktop
+super + alt + space
+    bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# MOVE/RESIZE
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# expand a window by moving one of its side outward
+super + ctrl + {h,j,k,l}
+    STEP=20; SELECTION={1,2,3,4}; \
+    bspc node -z $(echo "left -$STEP 0,bottom 0 $STEP,top 0 -$STEP,right $STEP 0" | cut -d',' -f$SELECTION) || \
+    bspc node -z $(echo "right -$STEP 0,top 0 $STEP,bottom 0 -$STEP,left $STEP 0" | cut -d',' -f$SELECTION)
+
+# move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+################################
+# APPLICATIONS
+################################
+
+# run launcher
+super + @space
+    rofi -modi window,drun,combi -show combi 
+
+# terminal emulator
+super + Return
+    kitty
+
+# browser
+super + alt + b
+    xdg-open https://
+
+# file manager
+super + alt + f
+    xdg-open $HOME
+
+# show clipmenu
+super + alt + v
+    clipmenu
+
+# screen locker
+super + alt + x
+    systemctl suspend

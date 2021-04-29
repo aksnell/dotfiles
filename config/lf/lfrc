@@ -1,0 +1,154 @@
+#===============================================================================
+# SETTINGS
+
+set anchorfind off
+set drawbox on
+set filesep "\n"
+set findlen 0
+set globsearch on
+set hidden off
+set ifs "\n"
+set incsearch on
+set info size:time
+set mouse on
+set number on
+set period 1
+set preview on
+set ratios "1:2:3"
+set scrolloff 24
+set shell zsh
+set shellopts "-euy"
+set tabstop 4
+set wrapscroll
+
+#===============================================================================
+# FUNCTIONS
+
+cmd fold ${{
+    set -- $(lf -remote load)
+    mode="$1"
+    shift
+    read dir
+    mkdir -p -- $dir
+    case "$mode" in
+        copy) cp -- "$@" "$dir";;
+        move) mv -- "$@" "$dir";;
+    esac
+    lf -remote "send load"
+    lf -remote "send clear"
+}}
+
+cmd fzf ${{
+    case $1 in
+        cd )
+            local target=$(fd . --hidden --type d | fzf --no-sort --cycle --header='Jump to directory')
+            lf -remote "send $id cd \"$target\""
+            ;;
+        edit )
+           nvim $(fd . --hidden --type f | fzf --no-sort --cycle --header='Open file for editing')
+           ;;
+    esac
+}}
+
+cmd link %{{
+    set -- $(lf -remote load)
+    mode="$1"
+    shift
+    if [ "$#" -lt 1 ]; then
+        lf -remote "send $id echo no files to link"
+        exit 0
+    fi
+    case "$mode" in
+        # symbolically copy mode is indicating a soft link
+        copy) ln -sr -t . -- "$@";;
+        # while a move mode is indicating a hard link
+        move) ln -t . -- "$@";;
+    esac
+}}
+
+cmd mkdir ${{
+    IFS=" "
+    mkdir -p -- "$*"
+    lf -remote "send $id select \"$*\""
+}}
+
+cmd select-all :unselect; invert
+
+cmd share-file ${{
+    curl -F"file=@$fx" https://0x0.st | xclip -selection c
+}}
+
+cmd delete ${{
+    set -f
+    rm --one-file-system --dir --force $f
+}}
+
+cmd touch ${{
+    IFS=" "
+    touch -- "$*"
+    lf -remote "send $id select \"$*\""
+}}
+
+cmd trash-put %{{
+    set -f
+    trash-put $fx
+}}
+
+cmd zle-cd %printf 'cd %q && zle reset-prompt\n' "$PWD" >&$ZLE_FIFO
+
+cmd zle-insert-relative %{{
+    for f in $fx; do
+        printf 'LBUFFER+="${LBUFFER:+ }${(q)$(realpath %q --relative-to=$PWD)}"\n' "$f" >&$ZLE_FIFO
+    done
+}}
+
+cmd zle-insert-absolute %{{
+    for f in $fx; do
+        printf 'LBUFFER+="${LBUFFER:+ }%q"\n' "$f" >&$ZLE_FIFO
+    done
+}}
+
+cmd zle-init :{{
+    map . zle-cd
+    map a zle-insert-relative
+    map A zle-insert-absolute
+}}
+
+&[[ -n "$ZLE_FIFO" ]] && lf -remote "send $id zle-init"
+
+#===============================================================================
+# MAPPING
+
+map <c-f> cmd-word
+map <c-b> cmd-word-back
+
+map ';'
+map ';d' !gdu
+map ';fc' fzf 'cd'
+map ';fe' fzf 'edit'
+map ';s' share-file
+
+map a select-all 
+map A unselect
+
+map b
+map bb mark-save
+map bj mark-load
+map br mark-remove
+map b` cd ~
+map b/ cd /
+
+map n
+map nd push :mkdir<space>
+map nf fold
+map nl link
+map nt push :touch<space>
+map nx chmod +x $fx
+
+map r push :rename<space>
+map R bulk-rename
+
+map x trash-put
+map xX delete
+
+

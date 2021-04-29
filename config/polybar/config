@@ -1,0 +1,243 @@
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/polybar/polybar
+;
+;   The README contains a lot of information
+;
+;==========================================================
+
+[colors]
+bg = #000000
+hl = #282828
+fg = #dfdfdf
+
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+[bar/main]
+monitor = DP-4
+monitor-fallback =
+monitor-strict = true
+monitor-redirect = false
+
+dpi=116
+height = 32
+width = 100%
+
+offset-x = 0%
+offset-y = 0%
+
+background = ${colors.bg}
+foreground = ${colors.fg}
+
+
+radius-top = 0.0
+radius-bottom = 0.0
+
+overline-size = 0
+overline-color =
+underline-size = 0
+underline-color =
+
+border-left-size = 0
+border-left-color =
+border-top-size = 0
+border-top-color =
+border-right-size = 0
+border-right-color =
+border-bottom-size = 0
+border-bottom-color =
+
+padding-left = 0
+padding-right = 0
+
+font-0 = "Droid Sans:size=9:weight=regular"
+
+modules-left = bspwm
+modules-center = xwindow
+modules-right = date
+module-margin-left = 1
+module-margin-right = 1
+fixed-center = true
+seperator =
+
+tray-position = right
+tray-detached = false
+tray-background = ${colors.bg}
+tray-offset-x = 0
+tray-offset-y = 0
+tray-padding = 0
+tray-scale = 0.9
+
+wm-name = bspwm
+wm-restack = bspwm
+enable-ipc = true
+override-redirect = false
+
+click-left = 
+click-middle = 
+click-right =
+scroll-up = bspwm-desknext
+scroll-down = bspwm-deskprev
+double-click-left =
+double-click-middle =
+double-click-right =
+
+cursor-click =
+cursor-scroll =
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:30:...%
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %index%
+label-focused-background = ${colors.hl}
+label-focused-padding = 3
+
+label-occupied = %index%
+label-occupied-padding = 2
+
+label-urgent = %index%!
+label-urgent-background = ${colors.hl}
+label-urgent-padding = 2
+
+label-empty = %index%
+label-empty-foreground = ${colors.fg}
+label-empty-padding = 2
+
+; Separator in between workspaces
+; label-separator = |
+
+
+[module/mpd]
+type = internal/mpd
+format-online = <label-song>  <icon-prev> <icon-stop> <toggle> <icon-next>
+
+icon-prev = 
+icon-stop = 
+icon-play = 
+icon-pause = 
+icon-next = 
+
+label-song-maxlen = 25
+label-song-ellipsis = true
+
+[module/wlan]
+type = internal/network
+interface = wlan0
+interval = 3.0
+
+format-connected = <ramp-signal> <label-connected>
+format-connected-underline =
+label-connected = %essid%
+
+format-disconnected =
+;format-disconnected = <label-disconnected>
+;format-disconnected-underline = ${self.format-connected-underline}
+;label-disconnected = %ifname% disconnected
+;label-disconnected-foreground = ${colors.foreground-alt}
+
+ramp-signal-0 = 
+ramp-signal-1 = 
+ramp-signal-2 = 
+ramp-signal-3 = 
+ramp-signal-4 = 
+ramp-signal-foreground = ${colors.hl}
+
+[module/date]
+type = internal/date
+interval = 5
+
+date = ""
+; date-alt = " %Y-%m-%d"
+
+time = %I:%M
+; time-alt = %I:%M:%S
+
+format-prefix = 
+format-prefix-foreground = ${colors.hl}
+; format-underline =
+
+label = %date% %time%
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+label-volume = 🔈 %percentage%%
+label-volume-foreground = ${colors.fg}
+
+label-muted = 🔇 muted
+label-muted-foreground = #666
+
+bar-volume-width = 10
+bar-volume-foreground-0 = #55aa55
+bar-volume-foreground-1 = #55aa55
+bar-volume-foreground-2 = #55aa55
+bar-volume-foreground-3 = #55aa55
+bar-volume-foreground-4 = #55aa55
+bar-volume-foreground-5 = #f5a70a
+bar-volume-foreground-6 = #ff5555
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-indicator-font = 2
+bar-volume-fill = ─
+bar-volume-fill-font = 2
+bar-volume-empty = ─
+bar-volume-empty-font = 2
+bar-volume-empty-foreground = ${colors.fg}
+
+format-volume = <label-volume>
+
+[module/powermenu]
+type = custom/menu
+
+expand-right = true
+
+format-spacing = 1
+
+label-open = 
+label-open-foreground = ${colors.hl}
+label-close =  cancel
+label-close-foreground = ${colors.hl}
+label-separator = |
+label-separator-foreground = ${colors.fg}
+
+menu-0-0 = reboot
+menu-0-0-exec = menu-open-1
+menu-0-1 = power off
+menu-0-1-exec = menu-open-2
+
+menu-1-0 = cancel
+menu-1-0-exec = menu-open-0
+menu-1-1 = reboot
+menu-1-1-exec = sudo reboot
+
+menu-2-0 = power off
+menu-2-0-exec = sudo poweroff
+menu-2-1 = cancel
+menu-2-1-exec = menu-open-0
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+;pseudo-transparency = false
+
+
+; vim:ft=dosini

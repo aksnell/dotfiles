@@ -1,0 +1,45 @@
+#!/usr/bin/zsh
+
+emulate zsh
+
+local pkg_list=$(paru --needed -Ssqq $1)
+
+local fzf_options=()
+
+# interface
+fzf_options+=(
+    --multi
+    --cycle 
+    --bind=space:toggle+down
+) 
+
+# layout
+fzf_options+=(
+    --layout=reverse-list 
+    --info="default"
+    --prompt="🔎"
+    --pointer="❯"
+    --marker="💾" 
+    --header="Install selected(💾) packages."
+)
+
+# display
+fzf_options+=( 
+    --color=fg:#ebdbb2,bg:#282828,hl:#fabd2f,fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f
+    --color=info:#83a598,prompt:#bdae93,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#665c54
+)
+
+# preview
+fzf_options+=(
+    --preview-window="right:60%:sharp:cycle"
+    --preview 
+    "bat -l yml --style='numbers,rule' --color always <(paru -Sii {1})"
+)
+
+local xargs_options=(
+    -ro 
+    paru 
+    -S
+)
+
+echo $pkg_list | fzf $fzf_options | xargs $xargs_options

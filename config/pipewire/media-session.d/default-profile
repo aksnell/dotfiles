@@ -1,0 +1,4 @@
+{
+  "default.profile.alsa_card.usb-NXP_SEMICONDUCTORS_GSP_370-00": { "name": "output:iec958-stereo+input:mono-fallback" },
+  "default.profile.alsa_card.pci-0000_01_00.1": { "name": "off" }
+}

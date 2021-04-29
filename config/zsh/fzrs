@@ -1,0 +1,30 @@
+#!/usr/bin/zsh
+
+emulate zsh
+
+local pkg_list=$(comm -23 <(paru -Qqet | sort) <({ pacman -Qqg base-devel; expac -l '\n' '%E' base; echo 'base' } | sort))
+
+local fzf_options=()
+
+# interface
+fzf_options+=(
+    --multi
+    --cycle 
+    --bind=space:toggle+down
+# layout
+    --layout=reverse-list 
+    --info="default"
+    --prompt="🔎"
+    --pointer="❯"
+    --marker="🔥" 
+    --header="Remove selected(🔥) explicitly installed packages."
+# display
+    --color=fg:#ebdbb2,bg:#282828,hl:#fabd2f,fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f
+    --color=info:#83a598,prompt:#bdae93,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#665c54
+# preview
+    --preview-window="right:60%:sharp:cycle"
+    --preview 
+    "bat -l yml --color always <(paru -Qi {1}) <(pacman -Rsp {1})"
+)
+
+echo $pkg_list | fzf $fzf_options | xargs -ro sudo pacman -Rns
